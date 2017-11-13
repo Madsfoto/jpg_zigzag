@@ -95,7 +95,7 @@ namespace Jpg_Zigzag_matrix
     
        
 
-        public List<int> NegDiag(int width, int height, Bitmap bm)
+        public List<int> NegDiag(int width, int height, Bitmap bm, bool single)
         {
             // start at (width, height)
             // go height + 1 and width - 1 until you hit width == 0.
@@ -103,66 +103,92 @@ namespace Jpg_Zigzag_matrix
 
             int w = width;
             int h = height;
+            //Console.WriteLine("W = "+w);
+            //Console.WriteLine("H = "+h);
             
-
             List<int> result = new List<int>();
             
             
 
-            for (int i=1;i<=width;i++) // An issue, every time the NegDiag function is called, the i value is overwritten and the resulting array is useless. 
+            for (int i=1;i<=width;i++) 
             {
                 
                 if (w>1)
                 {
-                    
+                    Console.WriteLine("First Loop: W H = " + w + " " + h);
                     Color c = bm.GetPixel(w, h);
                     int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
                     
                     result.Add(grayScaleInt);
-                    
-                    h++;
-                    w--;
-                    
+                    if (single != true)
+                    {
+                        w--;
+                        h++;
+
+                    }
+                    if(single==true)
+                    {
+
+                    }
+
+
                 }
                     
                 
             }
+
             // In reality I can just call the PosDiag() function from here, I know the next pixel to get (as I know the change between the two functions,
             // are height +1, then all the way back up until h=1 (first row).
             // and I know the coordinates 
 
             //foreach (int i in result)
             //{
-            //    Console.WriteLine("Begin");
-            //    System.Console.WriteLine(i);
-            //    Console.WriteLine();
+            //    Console.WriteLine("Begin "+i);
+            //    //System.Console.WriteLine(i);
+
             //}
-
-            h++;
-
-            for (int i = 1; i <= height; i++)
+            if (single != true)
             {
-                if (h >= 1)
-                {
-                    // do stuff untill we are at starting width +1 (as we are one diagonal further).
-                    //Console.WriteLine("Second loop, h = " + h);
-                    Color c = bm.GetPixel(w, h);
-                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                    // add to list
-                    result.Add(grayScaleInt);
-                    w++;
-                    h--;
-
-                }
+                w--;
+                h++;
+            }
+            if (single == true)
+            {
 
             }
 
-            //foreach (int i in result)
-            //{
-            //    Console.WriteLine("End");
-            //    System.Console.WriteLine(i);
-            //    Console.WriteLine();
-            //}
+
+            //Console.WriteLine("After first loop");
+            //Console.WriteLine("W = "+w);
+
+
+            if (single != true)
+            {
+                for (int j = 1; j <= width + 2; j++)
+                {
+
+                    if (h >= 0) // I need to decide if the h=0 is in the down or up motion. 
+                    {
+                        // do stuff untill we are at starting width +1 (as we are one diagonal further).
+                        //Console.WriteLine("Second loop, h = " + h);
+                        //Console.WriteLine("Second Loop: W H = " + w + " " + h);
+                        Color c = bm.GetPixel(w, h);
+                        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+                        // add to list
+                        result.Add(grayScaleInt);
+                        w++;
+                        h--;
+
+                    }
+
+                }
+            }
+            foreach (int i in result)
+            {
+                //Console.WriteLine("End "+i);
+                //System.Console.WriteLine(i);
+                //Console.WriteLine();
+            }
 
 
             return result;
@@ -198,12 +224,15 @@ namespace Jpg_Zigzag_matrix
                 {
                     // this way we get a height and width coordinate to give NegDiag() and PosDiag()
                     // if height == 0 and width / 2 has remainder 1 (meaning unequal), then run NegDiag().
-                    
+                    if (h==1 && w ==1)
+                    {
+                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
+                    }
                     if ((h == 1 && w %2==0) )
                     {
                         // First line, do the NegDiag() things on every equal point (starting at 1 so execute at 2,4,6,8).
                         
-                        grayData.AddRange(NegDiag(w-1, h-1, bmInput));
+                        grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
                         
                     
                     }
@@ -212,13 +241,16 @@ namespace Jpg_Zigzag_matrix
                     {
                         // last colum, 
                     }
-
+                    if (w== sqSize && h == sqSize)
+                    {
+                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
+                    }
                 }
             }
-            foreach (int i in grayData)
-            {
-                System.Console.WriteLine(i);
-            }
+            //foreach (int i in grayData)
+            //{
+            //    System.Console.WriteLine(i);
+            //}
 
 
 
