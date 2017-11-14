@@ -186,11 +186,8 @@ namespace Jpg_Zigzag_matrix
 
             for (int i = 0; i < width+2; i++)
             {
-                if(h==7)
-                {
-                    Console.WriteLine("H==7 HIT");
-                }
-                if ((w >= 0 && h >= 0 && w < bmWidth-1 && h < bmHeight-1) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
+               
+                if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
                 {
                     Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
                     Color c = bm.GetPixel(w, h);
@@ -205,7 +202,10 @@ namespace Jpg_Zigzag_matrix
                         //Console.WriteLine("single != true && w>=0 HIT");
                         w++;
                         h--;
-
+                        if(h==8)
+                        {
+                            break;
+                        }
                     }
                     else if (single == true) // Only a single 
                     {
@@ -258,7 +258,7 @@ namespace Jpg_Zigzag_matrix
                     
                     if (w == sqSize && h%2==0)
                     {
-                        // last colum, 
+                        //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, false));
                     }
                     if (w== sqSize && h == sqSize)
                     {
