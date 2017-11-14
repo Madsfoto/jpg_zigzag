@@ -102,9 +102,10 @@ namespace Jpg_Zigzag_matrix
             // I know how far up I should go, as I know the starting position (width,height) up to (0,height+width), meaning this function should run width times. 
             int bmWidth = bm.Width;
             int bmHeight = bm.Height;
+            
             int w = width;
             int h = height;
-            Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
+            //Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
             
             
             List<int> result = new List<int>();
@@ -128,8 +129,8 @@ namespace Jpg_Zigzag_matrix
 
                 if (w>=0 && h>=0 && w< bmWidth && h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                 {
-                    Console.WriteLine("Inside first grid, before move:  w = " + w + " | h = " + h);
-                    //Console.WriteLine("Inside grid: w = " + w + " | h = " + h);
+                    //Console.WriteLine("Inside first grid, before move:  w = " + w + " | h = " + h);
+                    
                     Color c = bm.GetPixel(w, h);
                     //Console.WriteLine("After GetPixel");
                     int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
@@ -141,10 +142,11 @@ namespace Jpg_Zigzag_matrix
                     {
                         w--;
                         h++;
-                        Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
+                        //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
                     }
                     else if (single==true) // Only a single 
                     {
+                        //Console.WriteLine("First loop: SINGLE == TRUE");
                         break;
                         // make no progress.
                     }
@@ -161,53 +163,63 @@ namespace Jpg_Zigzag_matrix
             // are height +1, then all the way back up until h=1 (first row).
             // and I know the coordinates 
 
-            
+
 
             //Console.WriteLine("After first loop\n");
 
             // First check if we are at the end of the first half above. 
-            if(w==0 && h%2==0)
+            //Console.WriteLine("h = " + h);
+            if (w==0 && h%2==1 && h!=7)
             {
+                
                 h++;
+                
             }
             if(h==7 && w!=7 && w%2==0)
             {
+                
                 w++;
             }
-            Console.WriteLine("After first loop, after move: w = " + w + " | h = " + h+"\n");
+            
+            Console.WriteLine("After first loop, after move, before second loop: w = " + w + " | h = " + h+"\n");
             // REMOVE COMMENTS!
-            //for (int i = 0; i < width; i++)
-            //{
 
-            //    if (w >= 0 && h >= 0 && w < bmWidth && h < bmHeight || single == true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
-            //    {
-            //        Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
-            //        Color c = bm.GetPixel(w, h);
-            //        //Console.WriteLine("After GetPixel");
-            //        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-            //        //Console.WriteLine("After Int");
-            //        result.Add(grayScaleInt);
-            //        //Console.WriteLine("After result.Add"+"\n");
+            for (int i = 0; i < width+2; i++)
+            {
+                if(h==7)
+                {
+                    Console.WriteLine("H==7 HIT");
+                }
+                if ((w >= 0 && h >= 0 && w < bmWidth-7 && h < bmHeight-1) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
+                {
+                    Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
+                    Color c = bm.GetPixel(w, h);
+                    //Console.WriteLine("After GetPixel");
+                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+                    //Console.WriteLine("After Int");
+                    result.Add(grayScaleInt);
+                    //Console.WriteLine("After result.Add"+"\n");
 
-            //        if (single != true && w >= 0) // If it is normal operation, single has NOT been set to true
-            //        {
-            //            Console.WriteLine("single != true && w>=0 HIT");
-            //            w++;
-            //            h--;
+                    if (single != true ) // If it is normal operation, single has NOT been set to true
+                    {
+                        //Console.WriteLine("single != true && w>=0 HIT");
+                        w++;
+                        h--;
 
-            //        }
-            //        else if (single == true) // Only a single 
-            //        {
-            //            break;
-            //            // make no progress.
-            //        }
-            //    }
-            //    else // Meaning we are outside of the grid
-            //    {
-            //        Console.WriteLine("OUTSIDE OF GRID SECOND LOOP: w = " + w + " | h = " + h);
-            //    }
+                    }
+                    else if (single == true) // Only a single 
+                    {
+                        Console.WriteLine("SINGLE == TRUE");
+                        break;
+                        // make no progress.
+                    }
+                }
+                else // Meaning we are outside of the grid
+                {
+                    Console.WriteLine("OUTSIDE OF GRID SECOND LOOP: w = " + w + " | h = " + h);
+                }
 
-            //}
+            }
 
 
 
