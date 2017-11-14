@@ -103,17 +103,17 @@ namespace Jpg_Zigzag_matrix
 
             int w = width;
             int h = height;
-            //Console.WriteLine("W = "+w);
-            //Console.WriteLine("H = "+h);
+            Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
+            
             
             List<int> result = new List<int>();
             
             
 
-            for (int i=1;i<=width;i++) 
+            for (int i=0;i<=width;i++) 
             {
                 
-                if (w>1)
+                if (w>1 || single==true)
                 {
                     Console.WriteLine("First Loop: W H = " + w + " " + h);
                     Color c = bm.GetPixel(w, h);
