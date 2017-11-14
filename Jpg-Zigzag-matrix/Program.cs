@@ -124,7 +124,7 @@ namespace Jpg_Zigzag_matrix
                 // it should be robust enough to start at (7,2) to (6,3) to (5,4), (4,5), (3,6) and (2,7).
 
                 // 
-                // boundtry check
+                // boundry check
 
                 if (w>=0 || h>=0 || w< bmWidth || h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                 {
