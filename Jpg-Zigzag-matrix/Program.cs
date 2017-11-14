@@ -90,17 +90,18 @@ namespace Jpg_Zigzag_matrix
             return new_image;
         }
 
-
         
-    
-       
+
+
+
 
         public List<int> NegDiag(int width, int height, Bitmap bm, bool single)
         {
             // start at (width, height)
             // go height + 1 and width - 1 until you hit width == 0.
             // I know how far up I should go, as I know the starting position (width,height) up to (0,height+width), meaning this function should run width times. 
-
+            int bmWidth = bm.Width;
+            int bmHeight = bm.Height;
             int w = width;
             int h = height;
             Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
@@ -112,29 +113,52 @@ namespace Jpg_Zigzag_matrix
 
             for (int i=0;i<=width;i++) 
             {
+                // In plain language I want:
+                //      a single pixel function for first and last pixel. 
+                //      a negative diagnoal function from (1,0) to (0,1)
+                //      a negative diagonal function from (3,0) to (2,1) to (1,2) to (0,3)
+                //      
+                // The challenge is getting the limits of the "board"/coordinates right. 
+                // Coordinates are starting from 0, ending in 7. 
                 
-                if (w>1 || single==true)
+                // it should be robust enough to start at (7,2) to (6,3) to (5,4), (4,5), (3,6) and (2,7).
+
+                // 
+                // boundtry check
+
+                if (w>=0 || h>=0 || w< bmWidth || h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                 {
-                    Console.WriteLine("First Loop: W H = " + w + " " + h);
+                    Console.WriteLine("Inside grid: w = " + w + " | h = " + h);
                     Color c = bm.GetPixel(w, h);
+                    //Console.WriteLine("After GetPixel");
                     int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                    
+                    //Console.WriteLine("After Int");
                     result.Add(grayScaleInt);
-                    if (single != true)
+                    //Console.WriteLine("After result.Add"+"\n");
+
+                    if (single!=true) // If it is normal operation, single has NOT been set to true
                     {
                         w--;
                         h++;
 
                     }
-                    if(single==true)
+                    else if (single==true) // Only a single 
                     {
-
+                        break;
+                        // make no progress.
                     }
-
-
                 }
-                    
+                else // Meaning we are outside of the grid
+                {
+                    Console.WriteLine("OUTSIDE GRID: w = " + w + " | h = " + h);
+                }
+
+
+               
+
+
                 
+
             }
 
             // In reality I can just call the PosDiag() function from here, I know the next pixel to get (as I know the change between the two functions,
@@ -147,48 +171,48 @@ namespace Jpg_Zigzag_matrix
             //    //System.Console.WriteLine(i);
 
             //}
-            if (single != true)
-            {
-                w--;
-                h++;
-            }
-            if (single == true)
-            {
+            //if (single != true)
+            //{
+            //    w--;
+            //    h++;
+            //}
+            //if (single == true)
+            //{
 
-            }
+            //}
 
 
             //Console.WriteLine("After first loop");
             //Console.WriteLine("W = "+w);
 
 
-            if (single != true)
-            {
-                for (int j = 1; j <= width + 2; j++)
-                {
+            //if (single != true)
+            //{
+            //    for (int j = 1; j <= width + 2; j++)
+            //    {
 
-                    if (h >= 0) // I need to decide if the h=0 is in the down or up motion. 
-                    {
-                        // do stuff untill we are at starting width +1 (as we are one diagonal further).
-                        //Console.WriteLine("Second loop, h = " + h);
-                        //Console.WriteLine("Second Loop: W H = " + w + " " + h);
-                        Color c = bm.GetPixel(w, h);
-                        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                        // add to list
-                        result.Add(grayScaleInt);
-                        w++;
-                        h--;
+            //        if (h >= 0) // I need to decide if the h=0 is in the down or up motion. 
+            //        {
+            //            // do stuff untill we are at starting width +1 (as we are one diagonal further).
+            //            //Console.WriteLine("Second loop, h = " + h);
+            //            //Console.WriteLine("Second Loop: W H = " + w + " " + h);
+            //            Color c = bm.GetPixel(w, h);
+            //            int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+            //            // add to list
+            //            result.Add(grayScaleInt);
+            //            w++;
+            //            h--;
 
-                    }
+            //        }
 
-                }
-            }
-            foreach (int i in result)
-            {
-                //Console.WriteLine("End "+i);
-                //System.Console.WriteLine(i);
-                //Console.WriteLine();
-            }
+            //    }
+            //}
+            //foreach (int i in result)
+            //{
+            //    //Console.WriteLine("End "+i);
+            //    //System.Console.WriteLine(i);
+            //    //Console.WriteLine();
+            //}
 
 
             return result;
