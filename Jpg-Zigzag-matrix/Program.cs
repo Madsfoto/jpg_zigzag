@@ -128,6 +128,7 @@ namespace Jpg_Zigzag_matrix
 
                 if (w>=0 && h>=0 && w< bmWidth && h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                 {
+                    Console.WriteLine("Inside first grid, before move:  w = " + w + " | h = " + h);
                     //Console.WriteLine("Inside grid: w = " + w + " | h = " + h);
                     Color c = bm.GetPixel(w, h);
                     //Console.WriteLine("After GetPixel");
@@ -140,7 +141,7 @@ namespace Jpg_Zigzag_matrix
                     {
                         w--;
                         h++;
-
+                        Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
                     }
                     else if (single==true) // Only a single 
                     {
@@ -162,79 +163,53 @@ namespace Jpg_Zigzag_matrix
 
             
 
-            Console.WriteLine("After first loop\n");
+            //Console.WriteLine("After first loop\n");
 
             // First check if we are at the end of the first half above. 
-            if(w==0 && h<=7)
+            if(w==0 && h%2==0)
             {
                 h++;
             }
-            if(h==7)
+            if(h==7 && w!=7 && w%2==0)
             {
                 w++;
             }
-            for(int i=0;i<width;i++)
-            {
-
-                if (w >= 0 && h >= 0 && w < bmWidth && h < bmHeight || single == true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
-                {
-                    Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
-                    Color c = bm.GetPixel(w, h);
-                    //Console.WriteLine("After GetPixel");
-                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                    //Console.WriteLine("After Int");
-                    result.Add(grayScaleInt);
-                    //Console.WriteLine("After result.Add"+"\n");
-
-                    if (single != true && w>=0) // If it is normal operation, single has NOT been set to true
-                    {
-                        Console.WriteLine("single != true && w>=0 HIT");
-                        w++;
-                        h--;
-
-                    }
-                    else if (single == true) // Only a single 
-                    {
-                        break;
-                        // make no progress.
-                    }
-                }
-                else // Meaning we are outside of the grid
-                {
-                    Console.WriteLine("OUTSIDE OF GRID SECOND LOOP: w = " + w + " | h = " + h);
-                }
-
-            }
-
-
-            // Copy of old function. 
-            //if (single != true)
+            Console.WriteLine("After first loop, after move: w = " + w + " | h = " + h+"\n");
+            // REMOVE COMMENTS!
+            //for (int i = 0; i < width; i++)
             //{
-            //    for (int j = 1; j <= width + 2; j++)
-            //    {
 
-            //        if (h >= 0) // I need to decide if the h=0 is in the down or up motion. 
+            //    if (w >= 0 && h >= 0 && w < bmWidth && h < bmHeight || single == true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
+            //    {
+            //        Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
+            //        Color c = bm.GetPixel(w, h);
+            //        //Console.WriteLine("After GetPixel");
+            //        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+            //        //Console.WriteLine("After Int");
+            //        result.Add(grayScaleInt);
+            //        //Console.WriteLine("After result.Add"+"\n");
+
+            //        if (single != true && w >= 0) // If it is normal operation, single has NOT been set to true
             //        {
-            //            // do stuff untill we are at starting width +1 (as we are one diagonal further).
-            //            //Console.WriteLine("Second loop, h = " + h);
-            //            //Console.WriteLine("Second Loop: W H = " + w + " " + h);
-            //            Color c = bm.GetPixel(w, h);
-            //            int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-            //            // add to list
-            //            result.Add(grayScaleInt);
+            //            Console.WriteLine("single != true && w>=0 HIT");
             //            w++;
             //            h--;
 
             //        }
-
+            //        else if (single == true) // Only a single 
+            //        {
+            //            break;
+            //            // make no progress.
+            //        }
             //    }
+            //    else // Meaning we are outside of the grid
+            //    {
+            //        Console.WriteLine("OUTSIDE OF GRID SECOND LOOP: w = " + w + " | h = " + h);
+            //    }
+
             //}
-            //foreach (int i in result)
-            //{
-            //    //Console.WriteLine("End "+i);
-            //    //System.Console.WriteLine(i);
-            //    //Console.WriteLine();
-            //}
+
+
 
 
             return result;
@@ -249,20 +224,6 @@ namespace Jpg_Zigzag_matrix
             List<int> grayData = new List<int>();
 
             
-            
-
-            // at 0,0. Handled in the function.
-            //Color c = bmInput.GetPixel(0, 0); // get color
-            //int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068); // get the brightness from the color
-            //grayData.Add(grayScaleInt);
-            
-            
-            // I need a switcher that goes from NegDiag() to PosDiag().
-            // meaning that when negDiag() is done, I have the result at (0,height), then switch to PosDiag at (0, height +1)
-            // when PosDiag() is done at (width,0), NegDiag() should start at (width+1,0)
-            // Update: No need for a switcher: NegDiag() can call PosDiag() as NegDiag() knows the coordinates for itself and can calculate the coordinates where PosDiag() should start,
-            // and that way I only need one outside function. Solves the problem of the array order as well. 
-
 
             for (int h=1;h<= sqSize; h++)
             {
