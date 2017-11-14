@@ -126,9 +126,9 @@ namespace Jpg_Zigzag_matrix
                 // 
                 // boundry check
 
-                if (w>=0 || h>=0 || w< bmWidth || h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
+                if (w>=0 && h>=0 && w< bmWidth && h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                 {
-                    Console.WriteLine("Inside grid: w = " + w + " | h = " + h);
+                    //Console.WriteLine("Inside grid: w = " + w + " | h = " + h);
                     Color c = bm.GetPixel(w, h);
                     //Console.WriteLine("After GetPixel");
                     int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
@@ -136,7 +136,7 @@ namespace Jpg_Zigzag_matrix
                     result.Add(grayScaleInt);
                     //Console.WriteLine("After result.Add"+"\n");
 
-                    if (single!=true) // If it is normal operation, single has NOT been set to true
+                    if (single!=true && w>0 && h>=0) // If it is normal operation, single has NOT been set to true
                     {
                         w--;
                         h++;
@@ -150,14 +150,9 @@ namespace Jpg_Zigzag_matrix
                 }
                 else // Meaning we are outside of the grid
                 {
-                    Console.WriteLine("OUTSIDE GRID: w = " + w + " | h = " + h);
+                    Console.WriteLine("OUTSIDE OF GRID: w = " + w + " | h = " + h);
                 }
 
-
-               
-
-
-                
 
             }
 
@@ -165,27 +160,54 @@ namespace Jpg_Zigzag_matrix
             // are height +1, then all the way back up until h=1 (first row).
             // and I know the coordinates 
 
-            //foreach (int i in result)
-            //{
-            //    Console.WriteLine("Begin "+i);
-            //    //System.Console.WriteLine(i);
+            
 
-            //}
-            //if (single != true)
-            //{
-            //    w--;
-            //    h++;
-            //}
-            //if (single == true)
-            //{
+            Console.WriteLine("After first loop\n");
 
-            //}
+            // First check if we are at the end of the first half above. 
+            if(w==0 && h<=7)
+            {
+                h++;
+            }
+            if(h==7)
+            {
+                w++;
+            }
+            for(int i=0;i<width;i++)
+            {
+
+                if (w >= 0 && h >= 0 && w < bmWidth && h < bmHeight || single == true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
+                {
+                    Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
+                    Color c = bm.GetPixel(w, h);
+                    //Console.WriteLine("After GetPixel");
+                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+                    //Console.WriteLine("After Int");
+                    result.Add(grayScaleInt);
+                    //Console.WriteLine("After result.Add"+"\n");
+
+                    if (single != true && w>=0) // If it is normal operation, single has NOT been set to true
+                    {
+                        Console.WriteLine("single != true && w>=0 HIT");
+                        w++;
+                        h--;
+
+                    }
+                    else if (single == true) // Only a single 
+                    {
+                        break;
+                        // make no progress.
+                    }
+                }
+                else // Meaning we are outside of the grid
+                {
+                    Console.WriteLine("OUTSIDE OF GRID SECOND LOOP: w = " + w + " | h = " + h);
+                }
+
+            }
 
 
-            //Console.WriteLine("After first loop");
-            //Console.WriteLine("W = "+w);
-
-
+            // Copy of old function. 
             //if (single != true)
             //{
             //    for (int j = 1; j <= width + 2; j++)
@@ -229,10 +251,10 @@ namespace Jpg_Zigzag_matrix
             
             
 
-            // at 0,0
-            Color c = bmInput.GetPixel(0, 0); // get color
-            int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068); // get the brightness from the color
-            grayData.Add(grayScaleInt);
+            // at 0,0. Handled in the function.
+            //Color c = bmInput.GetPixel(0, 0); // get color
+            //int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068); // get the brightness from the color
+            //grayData.Add(grayScaleInt);
             
             
             // I need a switcher that goes from NegDiag() to PosDiag().
