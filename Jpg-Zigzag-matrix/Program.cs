@@ -190,7 +190,7 @@ namespace Jpg_Zigzag_matrix
                 {
                     Console.WriteLine("H==7 HIT");
                 }
-                if ((w >= 0 && h >= 0 && w < bmWidth-7 && h < bmHeight-1) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
+                if ((w >= 0 && h >= 0 && w < bmWidth-1 && h < bmHeight-1) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
                 {
                     Console.WriteLine("Way Up input: w = " + w + " | h = " + h);
                     Color c = bm.GetPixel(w, h);
