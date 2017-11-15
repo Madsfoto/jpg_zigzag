@@ -245,24 +245,26 @@ namespace Jpg_Zigzag_matrix
                     // if height == 0 and width / 2 has remainder 1 (meaning unequal), then run NegDiag().
                     if (h==1 && w ==1)
                     {
-                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
+                       // grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
                     }
                     if ((h == 1 && w %2==0) )
                     {
                         // First line, do the NegDiag() things on every equal point (starting at 1 so execute at 2,4,6,8).
                         
-                        grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
+                        //grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
                         
                     
                     }
                     
                     if (w == sqSize && h%2==0)
                     {
-                        //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, false));
+                        // Last colum, hit (h==2, h==4, h==6).
+                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, false));
                     }
                     if (w== sqSize && h == sqSize)
                     {
-                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
+                        // Last point in the grid
+                        //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
                     }
                 }
             }
