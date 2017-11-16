@@ -250,7 +250,10 @@ namespace Jpg_Zigzag_matrix
             int sqSize = bmInput.Width;
             List<int> grayData = new List<int>();
 
-            
+            // In reality I only need to make the diagonal lines from the top line (to get 1st half of the board), then the width line for the last half.
+            // That way the I don't need the single clause or any other thing. 
+            // Every 2nd line in both directions, that way I am going to hit all the numbers. 
+            //
 
             for (int h=1;h<= sqSize; h++)
             {
