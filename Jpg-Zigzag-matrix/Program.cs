@@ -95,7 +95,7 @@ namespace Jpg_Zigzag_matrix
 
 
 
-        public List<int> NegDiag(int width, int height, Bitmap bm, bool single)
+        public List<int> NegDiag(int width, int height, Bitmap bm)
         {
             // start at (width, height)
             // go height + 1 and width - 1 until you hit width == 0.
@@ -105,137 +105,112 @@ namespace Jpg_Zigzag_matrix
             
             int w = width;
             int h = height;
+            int incr = 0;
             //Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
             
             
             List<int> result = new List<int>();
             
-            
-
-            for (int i=0;i<=width;i++) 
-            {
-                // In plain language I want:
-                //      a single pixel function for first and last pixel. 
-                //      a negative diagnoal function from (1,0) to (0,1)
-                //      a negative diagonal function from (3,0) to (2,1) to (1,2) to (0,3)
-                //      
-                // The challenge is getting the limits of the "board"/coordinates right. 
-                // Coordinates are starting from 0, ending in 7. 
-                
-                // it should be robust enough to start at (7,2) to (6,3) to (5,4), (4,5), (3,6) and (2,7).
-
-                // 
-                // boundry check
-
-                if (w>=0 && h>=0 && w< bmWidth && h< bmHeight || single==true) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
+            if(width==0 || width%2==1)
                 {
-                    Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
-                    
-                    Color c = bm.GetPixel(w, h);
-                    //Console.WriteLine("After GetPixel");
-                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                    //Console.WriteLine("After Int");
-                    result.Add(grayScaleInt);
-                    //Console.WriteLine("After result.Add"+"\n");
 
-                    if (single!=true && w>0 && h>=0) // If it is normal operation, single has NOT been set to true
-                    {
-                        w--;
-                        h++;
-                        //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
-                    }
-                    else if (single==true) // Only a single 
-                    {
-                        //Console.WriteLine("First loop: SINGLE == TRUE");
-                        break;
-                        // make no progress.
-                    }
-                }
-                else // Meaning we are outside of the grid
+                for (int i = 0; i <= width; i++)
                 {
-                    
-                }
+                    // In plain language I want:
+                    //      a single pixel function for first and last pixel. 
+                    //      a negative diagnoal function from (1,0) to (0,1)
+                    //      a negative diagonal function from (3,0) to (2,1) to (1,2) to (0,3)
+                    //      
+                    // The challenge is getting the limits of the "board"/coordinates right. 
+                    // Coordinates are starting from 0, ending in 7. 
+
+                    // it should be robust enough to start at (7,2) to (6,3) to (5,4), (4,5), (3,6) and (2,7).
 
 
-            }
 
-            // In reality I can just call the PosDiag() function from here, I know the next pixel to get (as I know the change between the two functions,
-            // are height +1, then all the way back up until h=1 (first row).
-            // and I know the coordinates 
-
-
-
-            //Console.WriteLine("After first loop\n");
-
-            // First check if we are at the end of the first half above. 
-            if(single==true)
-            {
-                h=-1;
-                w=-1;
-                single = false;
-            }
-            if(h==bmHeight && w==bmWidth)
-            {
-                h = -1;
-                w = -1;
-            }
-            if(h>7)
-            {
-                h--;
-            }
-            
-            if (w==0 && h%2==1 && h<7)
-            {
-                
-                h++;
-                
-            }
-            if(h==7 && w!=7 && w%2==0)
-            {
-                
-                w++;
-            }
-            
-            
-          
-
-            for (int i = 0; i < width+2; i++)
-            {
-               
-                if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || single == true) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
-                {
-                    Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
-                    Color c = bm.GetPixel(w, h);
-                    
-                    int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                    
-                    result.Add(grayScaleInt);
-                    
-
-                    if (single != true ) // If it is normal operation, single has NOT been set to true
+                    if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || (w == 0 && h == 0)) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                     {
-                        //Console.WriteLine("single != true && w>=0 HIT");
-                        w++;
-                        h--;
-                        if(h==8)
+                        //Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
+
+                        Color c = bm.GetPixel(w, h);
+                        //Console.WriteLine("After GetPixel");
+                        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+                        //Console.WriteLine("After Int");
+                        result.Add(grayScaleInt);
+                        //Console.WriteLine("After result.Add"+"\n");
+
+                        if (w >= 0 && h >= 0) // normal operation
                         {
-                            break;
+                            w--;
+                            h++;
+                            //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
                         }
+                        if (w == 0 && h == 0)
+                        {
+                            w = -1;
+                            h = -1;
+                        }
+
+
+
                     }
-                    else if (single == true) // Only a single 
+                    else // Meaning we are outside of the grid
                     {
-                        
-                        break;
-                        // make no progress.
+
                     }
+
+
                 }
-                else // Meaning we are outside of the grid
-                {
-                    
-                }
+
+                Console.WriteLine("After first loop\n");
+                incr++;
+                Console.WriteLine(incr);
 
             }
 
+
+
+
+           
+            
+
+           
+
+
+
+
+
+            //for (int i = 0; i < width+2; i++)
+            //{
+
+            //    if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight)) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
+            //    {
+            //        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
+            //        Color c = bm.GetPixel(w, h);
+
+            //        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+
+            //        result.Add(grayScaleInt);
+
+
+
+            //            //Console.WriteLine("single != true && w>=0 HIT");
+            //            w++;
+            //            h--;
+            //            if(h==bmHeight)
+            //            {
+            //                break;
+            //            }
+
+
+            //    }
+            //    else // Meaning we are outside of the grid
+            //    {
+
+            //    }
+
+            //}
+            //Console.WriteLine();
 
 
 
@@ -246,46 +221,51 @@ namespace Jpg_Zigzag_matrix
        
         public List<int> ZigzagFromBitmap(Bitmap bmInput)
         {
-            // the input bitmap is grayscale and resized, so we know the size of the array, it is square of the width.
-            int sqSize = bmInput.Width;
+            // Input values from the grayscaled input bitmap. Used for loop limits and pixel coordinates. 
+            // NOTE: GetPixel() starts at (0,0) so the loops run until the width. 
+            
+            // NOTE: The test of is it inside the grid is done inside the function.
+
+
+            int bmWidth = bmInput.Width;
+            int bmHeight = bmInput.Height;
             List<int> grayData = new List<int>();
 
             // In reality I only need to make the diagonal lines from the top line (to get 1st half of the board), then the width line for the last half.
             // That way the I don't need the single clause or any other thing. 
             // Every 2nd line in both directions, that way I am going to hit all the numbers. 
             //
+            int h = 0;
+            int w = 0;
 
-            for (int h=1;h<= sqSize; h++)
+            for (w = 0; w <= bmWidth; w++)
             {
-                for(int w=1;w<= sqSize; w++)
-                {
-                    // this way we get a height and width coordinate to give NegDiag() and PosDiag()
-                    // if height == 0 and width / 2 has remainder 1 (meaning unequal), then run NegDiag().
-                    if (h==1 && w ==1)
-                    {
-                       grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
-                    }
-                    if ((h == 1 && w %2==0) )
-                    {
-                        // First line, do the NegDiag() things on every equal point (starting at 1 so execute at 2,4,6,8).
-                        
-                        grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
-                        
-                    
-                    }
-                    
-                    if (w == sqSize && h%2==0)
-                    {
-                        // Last colum, hit (h==2, h==4, h==6).
-                        grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, false));
-                    }
-                    //if (w== sqSize && h == sqSize) // is covered by above
-                    //{
-                    //    // Last point in the grid
-                    //    //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
-                    //}
-                }
+
+                // this way we get a height and width coordinate to give NegDiag() and PosDiag()
+                // if height == 0 and width / 2 has remainder 1 (meaning unequal), then run NegDiag().
+
+                grayData.AddRange(NegDiag(w, h, bmInput));
+
             }
+
+
+            // Width of an 8x8 pixel image is 8, but GetPixel() goes from 0 to 7, so in order to set the max width GetPixel() can handle, I set w here. 
+            // I am not sure if it would be the correct place stylistically, I can argue it would be better in the grayData() function or here.
+            // I choose it in the function as it makes more sense to do the calculation there, it's closer to where it needs to be in the end.
+
+            
+
+            w = bmWidth;
+            // For the second half of the grid, we set w to max width and go down the height (with (0,0) in the top left corner),
+            // that way we get the other half of the grid: Negative diagnoal from (width,0) is 
+            //If the width is equal the last 
+
+
+            for (h=0;h<= bmHeight; h++)
+            {
+                grayData.AddRange(NegDiag((w-1), h, bmInput));
+            }
+            
             //foreach (int i in grayData)
             //{
             //    System.Console.WriteLine(i);
@@ -326,3 +306,61 @@ namespace Jpg_Zigzag_matrix
         }
     }
 }
+
+
+/* Extra if()'s:
+ * //if(h==bmHeight && w==bmWidth)
+            //{
+            //    h = -1;
+            //    w = -1;
+            //}
+            //if(h>7)
+            //{
+            //    h--;
+            //}
+            
+            //if (w==0 && h%2==1 && h<7)
+            //{
+                
+            //    h++;
+                
+            //}
+            //if(h==7 && w!=7 && w%2==0)
+            //{
+                
+            //    w++;
+            //}
+
+
+
+
+
+
+    // First line, do the NegDiag() things on every equal point (starting at 1 so execute at 2,4,6,8).
+
+            //    grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
+
+
+
+            //if (w == sqSize && h%2==0)
+            //{
+            //    // Last colum, hit (h==2, h==4, h==6).
+            //    grayData.AddRange(NegDiag(w - 1, h - 1, bmInput));
+            //}
+            //if (w== sqSize && h == sqSize) // is covered by above
+            //{
+            //    // Last point in the grid
+            //    //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
+            //}
+
+            //int w = 0;
+
+
+
+
+
+
+
+
+
+            */
