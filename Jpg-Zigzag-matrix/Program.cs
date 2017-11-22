@@ -233,6 +233,7 @@ namespace Jpg_Zigzag_matrix
 
                     for (int i = 0; i <= width + 1; i++)
                     {
+                        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
                         // we have moved one down, so pixel data, then move. 
                         Color c = bm.GetPixel(w, h);
                         //Console.WriteLine("After GetPixel");
