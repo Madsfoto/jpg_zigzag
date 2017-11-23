@@ -127,8 +127,8 @@ namespace Jpg_Zigzag_matrix
 
             {
                 //Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
-
-                for (int i = 0; i <= width; i++)
+                // First loop.
+                for (int i = 0; i <= width; i++) // First loop
                 {
                     // In plain language I want:
                     //      a single pixel function for first and last pixel. 
@@ -144,7 +144,7 @@ namespace Jpg_Zigzag_matrix
 
                     if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || (w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                     {
-                        Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
+                        //Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
 
                         Color c = bm.GetPixel(w, h);
                         //Console.WriteLine("After GetPixel");
@@ -154,16 +154,16 @@ namespace Jpg_Zigzag_matrix
                         //Console.WriteLine("After result.Add"+"\n");
 
 
-                        //if ((w == 0 && h == 0) || (w==bmWidth && h==bmHeight)) // Would that work? 
+                        
                         
                         if ((w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // If at the first or last place in the image, bug out.
                         {
-                            Console.WriteLine("Inside 1st grid: w = " + w + " | h = " + h);
+                            //Console.WriteLine("Inside 1st grid: w = " + w + " | h = " + h);
                             w = -1;
                             h = -1;
 
                         }
-                        else if (w >= 0 && h >= 0) // normal operation
+                        else if (w >= 0 && h >= 0) // normal operation first loop
                         {
                             //Console.WriteLine("Normal operation");
                             if (h < bmHeight)
@@ -174,17 +174,16 @@ namespace Jpg_Zigzag_matrix
                                     w = 0;
                                     h++;
                                 }
-                                else if (h >= bmHeight)
-                                {
-                                    // What should happen when you are at the height, then you're already too far acording to GetPixel().
-                                    //Console.WriteLine("L" + __LINE__() + ": h>bmheight. ");
-                                }
-                                else
+                                else if(w<bmWidth)
                                 {
                                     w--;
                                     h++;
 
                                 }
+
+                                
+                                
+                                
                                 //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
                             }
                         }
@@ -199,7 +198,8 @@ namespace Jpg_Zigzag_matrix
                     }
                     else // Meaning we are outside of the grid
                     {
-
+                        Console.WriteLine("h>bmHeight. L " + __LINE__());
+                        Console.WriteLine("wh>bmWidth. L " + __LINE__());
                     }
 
 
@@ -219,36 +219,40 @@ namespace Jpg_Zigzag_matrix
 
                 if (h >= bmHeight)
                 {
+                    w = w + 1;
+                    h--;
+                    //Console.WriteLine("h > bmheight. | Line " + __LINE__() + " | w == " + w + " & h== " + h);
                     //Console.WriteLine("h>bmheight. l " + __LINE__());
 
-                    // set h to max
+                    
+
+                    
                 }
-                if (w == 0)
+                if (w == 0 && h<bmHeight || h==bmHeight-1)
                 {
 
                     //Console.WriteLine("L"+ __LINE__()+": w==0");
                     //Console.WriteLine("L" + __LINE__() + ": h==" + h);
-                    if(h<bmHeight)
-                    {
-
+                    
                     for (int i = 0; i <= width + 1; i++)
                     {
                         Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
                         // we have moved one down, so pixel data, then move. 
                         Color c = bm.GetPixel(w, h);
-                        //Console.WriteLine("After GetPixel");
                         int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                        //Console.WriteLine("After Int");
                         result.Add(grayScaleInt);
 
-                        if (h > 0 && w<bmWidth) // more tests? do we need to test?
+                        if ((h > 0 && w<bmWidth)) // more tests? do we need to test?
                         {
 
                             w++;
                             h--;
-
+                            if(w==bmWidth)
+                            {
+                                break;
+                            }
                         }
-                        else if (h == 0) // at the top line, take pixel data and 
+                        else if (h == 0) 
                         {
                             break;
                         }
@@ -272,7 +276,7 @@ namespace Jpg_Zigzag_matrix
 
 
 
-            }
+            
             else // Not even width, meaning that 
             {
                 //Console.WriteLine(" ELSE OF if (evenW == true && (width == 0 || width % 2 == 1)) | L "+__LINE__());
