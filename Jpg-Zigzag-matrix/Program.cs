@@ -119,14 +119,19 @@ namespace Jpg_Zigzag_matrix
             List<int> result = new List<int>();
 
 
-            // I need to do different things depending of the evenness of the source image. 
-            // If evenW is true, 
+            //Console.WriteLine("Input: W = " + w + " H = " + h);
+            //Console.WriteLine(evenW);
 
+            if (evenW == true && ((width == 0 || width % 2 == 1)))
+                //if ((width == bmWidth - 1 && h % 2 == 1)) // Nothing should happen if width is at the last line and h is odd. 
 
-            if (evenW == true && (width == 0 || width % 2 == 1))
-
+                //{
+                //    w = -1;
+                //    h = -1;
+                //}
+            if (!(w == -1 && h == -1))
             {
-                Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
+                //Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
                 // First loop.
                 for (int i = 0; i <= width; i++) // First loop
                 {
@@ -144,7 +149,7 @@ namespace Jpg_Zigzag_matrix
 
                     if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || (w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
                     {
-                        //Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
+                        Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
 
                         Color c = bm.GetPixel(w, h);
                         //Console.WriteLine("After GetPixel");
@@ -154,11 +159,11 @@ namespace Jpg_Zigzag_matrix
                         //Console.WriteLine("After result.Add"+"\n");
 
 
-                        
-                        
+
+
                         if ((w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // If at the first or last place in the image, bug out.
                         {
-                            //Console.WriteLine("Inside 1st grid: w = " + w + " | h = " + h);
+                            
                             w = -1;
                             h = -1;
 
@@ -174,22 +179,22 @@ namespace Jpg_Zigzag_matrix
                                     w = 0;
                                     h++;
                                 }
-                                else if(w<bmWidth)
+                                else if (w < bmWidth)
                                 {
                                     w--;
                                     h++;
 
                                 }
 
-                                
-                                
-                                
+
+
+
                                 //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
                             }
                         }
                         else
                         {
-                            Console.WriteLine("H ! < bmHeight | L " + __LINE__());
+                            //Console.WriteLine("H ! < bmHeight | L " + __LINE__());
                         }
 
 
@@ -198,8 +203,8 @@ namespace Jpg_Zigzag_matrix
                     }
                     else // Meaning we are outside of the grid
                     {
-                        Console.WriteLine("h>bmHeight. L " + __LINE__());
-                        Console.WriteLine("wh>bmWidth. L " + __LINE__());
+                        //Console.WriteLine("h>bmHeight. L " + __LINE__());
+                        //Console.WriteLine("wh>bmWidth. L " + __LINE__());
                     }
 
 
@@ -224,35 +229,35 @@ namespace Jpg_Zigzag_matrix
                     //Console.WriteLine("h > bmheight. | Line " + __LINE__() + " | w == " + w + " & h== " + h);
                     //Console.WriteLine("h>bmheight. l " + __LINE__());
 
-                    
 
-                    
+
+
                 }
-                if (w == 0 && h<bmHeight || h==bmHeight-1)
+                if (w == 0 && h < bmHeight || h == bmHeight - 1)
                 {
 
                     //Console.WriteLine("L"+ __LINE__()+": w==0");
                     //Console.WriteLine("L" + __LINE__() + ": h==" + h);
-                    
+
                     for (int i = 0; i <= width + 1; i++)
                     {
-                        //Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
+                        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
                         // we have moved one down, so pixel data, then move. 
                         Color c = bm.GetPixel(w, h);
                         int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
                         result.Add(grayScaleInt);
 
-                        if ((h > 0 && w<bmWidth)) // more tests? do we need to test?
+                        if ((h > 0 && w < bmWidth)) // more tests? do we need to test?
                         {
 
                             w++;
                             h--;
-                            if(w==bmWidth)
+                            if (w == bmWidth)
                             {
                                 break;
                             }
                         }
-                        else if (h == 0) 
+                        else if (h == 0)
                         {
                             break;
                         }
@@ -264,9 +269,10 @@ namespace Jpg_Zigzag_matrix
 
                     }
 
-                    }
-
                 }
+
+            }
+        
 
                 // TODO: Is this required?
             if(evenW==true)  //
@@ -351,6 +357,7 @@ namespace Jpg_Zigzag_matrix
 
             //Console.WriteLine("Outside everything: W== " + w);
             // At this point w is equal to bmWidth.
+            w--; // Dirty hack. TODO: Fix more elegantly.
 
             if (squareSize > 2)
             {
@@ -358,14 +365,14 @@ namespace Jpg_Zigzag_matrix
 
                 if (evenW == true)
                 {
-                    for (h = 2; h < bmHeight; h++)
+                    for (h = 2; h < bmHeight; h=h+2)
                     {
                         grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
                     }
                 }
                 else
                 {
-                    for (h = 3; h < bmHeight; h++)
+                    for (h = 3; h < bmHeight; h=h+2)
                     {
                         grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
                     }
