@@ -254,13 +254,16 @@ namespace Jpg_Zigzag_matrix
                             h--;
                             if (w == bmWidth)
                             {
+                                    Console.WriteLine();
                                 break;
                             }
                         }
                         else if (h == 0)
                         {
-                            break;
-                        }
+                                Console.WriteLine();
+                                break;
+                                
+                            }
                         else // h<0 is impossible
                         {
 
@@ -365,16 +368,40 @@ namespace Jpg_Zigzag_matrix
 
                 if (evenW == true)
                 {
-                    for (h = 2; h < bmHeight; h=h+2)
+                    for (h = 2; h < bmHeight; h++)
                     {
-                        grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        if(h%2==0)
+                        {
+                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        }
+                        else if(h==bmHeight-1)
+                        {
+                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        }
+                        else
+                        {
+
+                        }
+                        
                     }
                 }
                 else
                 {
-                    for (h = 3; h < bmHeight; h=h+2)
+                    for (h = 3; h < bmHeight; h++)
                     {
-                        grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        if (h % 2 == 1)
+                        {
+                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        }
+                        else if (h == bmHeight - 1)
+                        {
+                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                        }
+                        else
+                        {
+
+                        }
+                        
                     }
                 }
             }
