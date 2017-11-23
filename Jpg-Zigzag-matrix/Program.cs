@@ -126,7 +126,7 @@ namespace Jpg_Zigzag_matrix
             if (evenW == true && (width == 0 || width % 2 == 1))
 
             {
-                //Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
+                Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
                 // First loop.
                 for (int i = 0; i <= width; i++) // First loop
                 {
@@ -236,7 +236,7 @@ namespace Jpg_Zigzag_matrix
                     
                     for (int i = 0; i <= width + 1; i++)
                     {
-                        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
+                        //Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
                         // we have moved one down, so pixel data, then move. 
                         Color c = bm.GetPixel(w, h);
                         int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
@@ -268,17 +268,12 @@ namespace Jpg_Zigzag_matrix
 
                 }
 
-                if (h == bmHeight - 1)
-                {
-                    Console.WriteLine("if (h == bmHeight - 1) | L " + __LINE__());
-                    // go back
-                }
-
-
-
-            
-            else // Not even width, meaning that 
+                // TODO: Is this required?
+            if(evenW==true)  //
             {
+                
+                
+                
                 //Console.WriteLine(" ELSE OF if (evenW == true && (width == 0 || width % 2 == 1)) | L "+__LINE__());
                 //Console.WriteLine("h == " + h+" | L "+__LINE__());
                 //Console.WriteLine("w == " + w + " | L " + __LINE__());
@@ -353,7 +348,29 @@ namespace Jpg_Zigzag_matrix
                 grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
 
             }
-            
+
+            //Console.WriteLine("Outside everything: W== " + w);
+            // At this point w is equal to bmWidth.
+
+            if (squareSize > 2)
+            {
+
+
+                if (evenW == true)
+                {
+                    for (h = 2; h < bmHeight; h++)
+                    {
+                        grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                    }
+                }
+                else
+                {
+                    for (h = 3; h < bmHeight; h++)
+                    {
+                        grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
+                    }
+                }
+            }
 
             // Width of an 8x8 pixel image is 8, but GetPixel() goes from 0 to 7, so in order to set the max width GetPixel() can handle, I set w here. 
             // I am not sure if it would be the correct place stylistically, I can argue it would be better in the grayData() function or here.
