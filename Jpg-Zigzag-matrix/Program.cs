@@ -224,7 +224,7 @@ namespace Jpg_Zigzag_matrix
 
                 if (h >= bmHeight)
                 {
-                    w = w + 1;
+                    w++;
                     h--;
                     //Console.WriteLine("h > bmheight. | Line " + __LINE__() + " | w == " + w + " & h== " + h);
                     //Console.WriteLine("h>bmheight. l " + __LINE__());
