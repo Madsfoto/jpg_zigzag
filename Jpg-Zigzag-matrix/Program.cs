@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Diagnostics;
+using System.Threading;
+using System.IO;
 
 namespace Jpg_Zigzag_matrix
 {
@@ -14,7 +16,6 @@ namespace Jpg_Zigzag_matrix
 
         public int currentCount = 0;
         public int maxCount = 0;
-        public int squareSize = 8;
 
         public string PercentDone()
         {
@@ -72,6 +73,8 @@ namespace Jpg_Zigzag_matrix
             maxCount = count;
         }
 
+      
+
         static int __LINE__([System.Runtime.CompilerServices.CallerLineNumber] int lineNumber = 0)
         {
             return lineNumber;
@@ -95,464 +98,252 @@ namespace Jpg_Zigzag_matrix
         }
 
 
-
-
-
-
-        public List<int> NegDiag(int width, int height, Bitmap bm, bool evenW, bool evenH)
+        public int PixelColor(int w, int h, Bitmap bm)
         {
-            // start at (width, height)
-            // go height + 1 and width - 1 until you hit width == 0.
+            Color c = bm.GetPixel(w, h);
+            //Console.WriteLine("After GetPixel");
+            int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+            return grayScaleInt;
 
-            // evenW: Is the source image even in width?
-            // evenH: Is the source image even in height?
-
-            int bmWidth = bm.Width;
-            int bmHeight = bm.Height;
-
-            int w = width;
-            int h = height;
-
-            //Console.WriteLine("Input to the NegDiag() function: W = "+w + " H = " + h);
-
-
-            List<int> result = new List<int>();
-
-
-            //Console.WriteLine("Input: W = " + w + " H = " + h);
-            //Console.WriteLine(evenW);
-
-            if (evenW == true && ((width == 0 || width % 2 == 1)))
-                //if ((width == bmWidth - 1 && h % 2 == 1)) // Nothing should happen if width is at the last line and h is odd. 
-
-                //{
-                //    w = -1;
-                //    h = -1;
-                //}
-            if (!(w == -1 && h == -1))
+        }
+        public int[] CrushInts(int[] InputArr)
+        {
+            int[] crushedArr = new int[InputArr.Length];
+            for (int i = 0; i < InputArr.Length; i++)
             {
-                //Console.WriteLine("Input to the IF function: W = " + w + " H = " + h);
-                // First loop.
-                for (int i = 0; i <= width; i++) // First loop
-                {
-                    // In plain language I want:
-                    //      a single pixel function for first and last pixel. 
-                    //      a negative diagnoal function from (1,0) to (0,1)
-                    //      a negative diagonal function from (3,0) to (2,1) to (1,2) to (0,3)
-                    //      
-                    // The challenge is getting the limits of the "board"/coordinates right. 
-                    // Coordinates are starting from 0, ending in bmWidth-1. 
+                crushedArr[i] = (int)((InputArr[i] / (254 / 89f)) + 10);    // ugly code. Should be 255/89, but then it gets trunciated from 2.876404494 to 2 
+                                                                            // and gives wrong results. 255*(255/89f) is 98 so I'm not filling the range properly.
+                                                                            // so the answer was 254/89f. Would 253/89f give better results? To be tested!
+            }
+            return crushedArr;
+        }
 
-                    // it should be robust enough to start at (7,2) to (6,3) to (5,4), (4,5), (3,6) and (2,7).
+        // Crush the ints into the 10-99 range
+        public string CrushedString(int[] InputArr)
+        {
+            string output = "";
+            for (int i = 0; i < InputArr.Length; i++)
+            {
+                //output += crushedArr[i].ToString() + ", "; // Gives "xx, xx, xx, "
+                output += InputArr[i].ToString();
+            }
 
+            return output;
+        }
 
+        public void Rename(string input, string output)
+        {
 
-                    if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight) || (w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // bmWidth and bmHeight starts at 1, so the values will always be larger than the ones get
-                    {
-                        Console.WriteLine("Inside 1st grid, before move: w = " + w + " | h = " + h);
-
-                        Color c = bm.GetPixel(w, h);
-                        //Console.WriteLine("After GetPixel");
-                        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                        //Console.WriteLine("After Int");
-                        result.Add(grayScaleInt);
-                        //Console.WriteLine("After result.Add"+"\n");
-
-
-
-
-                        if ((w == 0 && h == 0) || (w == bmWidth - 1 && h == bmHeight - 1)) // If at the first or last place in the image, bug out.
-                        {
-                            
-                            w = -1;
-                            h = -1;
-
-                        }
-                        else if (w >= 0 && h >= 0) // normal operation first loop
-                        {
-                            //Console.WriteLine("Normal operation");
-                            if (h < bmHeight)
-                            {
-                                if (w - 1 < 0)
-                                {
-                                    //Console.WriteLine("L" + __LINE__() + " if(w-1<0 && h<bmHeight)");
-                                    w = 0;
-                                    h++;
-                                }
-                                else if (w < bmWidth)
-                                {
-                                    w--;
-                                    h++;
-
-                                }
-
-
-
-
-                                //Console.WriteLine("Inside first grid, after move:   w = " + w + " | h = " + h);
-                            }
-                        }
-                        else
-                        {
-                            //Console.WriteLine("H ! < bmHeight | L " + __LINE__());
-                        }
-
-
-
-
-                    }
-                    else // Meaning we are outside of the grid
-                    {
-                        //Console.WriteLine("h>bmHeight. L " + __LINE__());
-                        //Console.WriteLine("wh>bmWidth. L " + __LINE__());
-                    }
-
-
-                }
-                // now we are at the w==0 place, meaning we need to go height +1, and go back up to h==0.
-
-
-                // TODO: Test if the resied image is even pixels (8,10,12 etc) or odd (7,9,11 etc): 
-                // If bmWidth is even, then GetPixel() is odd, meaning that the w==max is negDiag. 
-                //If bmWidth is odd, then Getpixel() is even, meaning that w==max should start at h==1. 
-
-
-                //Console.WriteLine("After first loop\n");
-                //Console.WriteLine("INSIDE THE IF");
-                //Console.WriteLine("w== " + w);
-                //Console.WriteLine("h== " + h + "\n");
-
-                if (h >= bmHeight)
-                {
-                    w++;
-                    h--;
-                    //Console.WriteLine("h > bmheight. | Line " + __LINE__() + " | w == " + w + " & h== " + h);
-                    //Console.WriteLine("h>bmheight. l " + __LINE__());
-
-
-
-
-                }
-                if (w == 0 && h < bmHeight || h == bmHeight - 1)
-                {
-
-                    //Console.WriteLine("L"+ __LINE__()+": w==0");
-                    //Console.WriteLine("L" + __LINE__() + ": h==" + h);
-
-                    for (int i = 0; i <= width + 1; i++)
-                    {
-                        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
-                        // we have moved one down, so pixel data, then move. 
-                        Color c = bm.GetPixel(w, h);
-                        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-                        result.Add(grayScaleInt);
-
-                        if ((h > 0 && w < bmWidth)) // more tests? do we need to test?
-                        {
-
-                            w++;
-                            h--;
-                            if (w == bmWidth)
-                            {
-                                    Console.WriteLine();
-                                break;
-                            }
-                        }
-                        else if (h == 0)
-                        {
-                                Console.WriteLine();
-                                break;
-                                
-                            }
-                        else // h<0 is impossible
-                        {
-
-                        }
-
-
-                    }
-
-                }
+            try
+            {
+                File.Move(input, output);
+            }
+            catch
+            {
 
             }
+
+
+        }
+
+        public string CreateOutputArrOnly(string Array)
+        {
+            string output = Array + ".jpg";
+
+            return output;
+        }
+
+        public void Run(string fileName)
+        {
+
+            Bitmap bm = new Bitmap(fileName);
+            Bitmap Resized = Resize(bm, 8); // hardcoded
+            List<int> data = new List<int>();
+
+            data.AddRange(PixelColorList(Resized));
+
+            int[] dataArr = new int[data.Count];
+            dataArr = data.ToArray();
+            int[] CrushedIntArr = CrushInts(dataArr);
+            string crushed = CrushedString(CrushedIntArr);
+
+            Resized.Dispose();
+            bm.Dispose();
+
+            //Console.WriteLine("Crushed = " + crushed);
+
+
+            string output = CreateOutputArrOnly(crushed);
+            Rename(fileName, output);
+
+        }
+
         
 
-                // TODO: Is this required?
-            if(evenW==true)  //
+
+        public List<int> PixelColorList(Bitmap bm)
+        {
+
+            // Everything is based of GetPixel(), so everything starts at 0!!!
+
+
+            List<int> result = new List<int> // PixelColor() at the required places, hardcoded
             {
-                
-                
-                
-                //Console.WriteLine(" ELSE OF if (evenW == true && (width == 0 || width % 2 == 1)) | L "+__LINE__());
-                //Console.WriteLine("h == " + h+" | L "+__LINE__());
-                //Console.WriteLine("w == " + w + " | L " + __LINE__());
-                //Console.WriteLine();
-            }
+                // PixelColor(int w, int h, Bitmap bm)
+                PixelColor(0, 0, bm),
 
+                PixelColor(1, 0, bm),
+                PixelColor(0, 1, bm),
 
+                PixelColor(0, 2, bm),
+                PixelColor(1, 1, bm),
+                PixelColor(2, 0, bm),
 
+                PixelColor(3, 0, bm),
+                PixelColor(2, 1, bm),
+                PixelColor(1, 2, bm),
+                PixelColor(0, 3, bm),
 
+                PixelColor(0, 4, bm),
+                PixelColor(1, 3, bm),
+                PixelColor(2, 2, bm),
+                PixelColor(3, 1, bm),
+                PixelColor(4, 0, bm),
 
+                PixelColor(5, 0, bm),
+                PixelColor(4, 1, bm),
+                PixelColor(3, 2, bm),
+                PixelColor(2, 3, bm),
+                PixelColor(1, 4, bm),
+                PixelColor(0, 5, bm),
 
+                PixelColor(0, 6, bm),
+                PixelColor(1, 5, bm),
+                PixelColor(2, 4, bm),
+                PixelColor(3, 3, bm),
+                PixelColor(4, 2, bm),
+                PixelColor(5, 1, bm),
+                PixelColor(6, 0, bm),
 
+                PixelColor(7, 0, bm),
+                PixelColor(6, 1, bm),
+                PixelColor(5, 2, bm),
+                PixelColor(4, 3, bm),
+                PixelColor(3, 4, bm),
+                PixelColor(2, 5, bm),
+                PixelColor(1, 6, bm),
+                PixelColor(0, 7, bm),
 
+                PixelColor(1, 7, bm),
+                PixelColor(2, 6, bm),
+                PixelColor(3, 5, bm),
+                PixelColor(4, 4, bm),
+                PixelColor(5, 3, bm),
+                PixelColor(6, 2, bm),
+                PixelColor(7, 1, bm),
 
+                PixelColor(7, 2, bm),
+                PixelColor(6, 3, bm),
+                PixelColor(5, 4, bm),
+                PixelColor(4, 5, bm),
+                PixelColor(3, 6, bm),
+                PixelColor(2, 7, bm),
 
+                PixelColor(3, 7, bm),
+                PixelColor(4, 6, bm),
+                PixelColor(5, 5, bm),
+                PixelColor(6, 4, bm),
+                PixelColor(7, 3, bm),
 
+                PixelColor(7, 4, bm),
+                PixelColor(6, 5, bm),
+                PixelColor(5, 6, bm),
+                PixelColor(4, 7, bm),
 
-           
+                PixelColor(5, 7, bm),
+                PixelColor(6, 6, bm),
+                PixelColor(7, 5, bm),
 
+                PixelColor(7, 6, bm),
+                PixelColor(6, 7, bm),
 
+                PixelColor(7, 7, bm)
+            };
 
             return result;
 
         }
 
 
-        public List<int> ZigzagFromBitmap(Bitmap bmInput)
-        {
-            // Input values from the grayscaled input bitmap. Used for loop limits and pixel coordinates. 
-            // NOTE: GetPixel() starts at (0,0) so the loops run until the width. 
-
-            // NOTE: The test of is it inside the grid is done inside the function.
-
-
-            int bmWidth = bmInput.Width;
-            int bmHeight = bmInput.Height;
-            bool evenW;
-            bool evenH;
-            if (bmWidth % 2 == 0)
-            {
-                evenW = true;
-            }
-            else
-            {
-                evenW = false;
-            }
-
-            if (bmHeight % 2 == 0)
-            {
-                evenH = true;
-            }
-            else
-            {
-                evenH = false;
-            }
-
-            List<int> grayData = new List<int>();
-
-            // In reality I only need to make the diagonal lines from the top line (to get 1st half of the board), then the width line for the last half.
-            // That way the I don't need the single clause or any other thing. 
-            // Every 2nd line in both directions, that way I am going to hit all the numbers. 
-            //
-            int h = 0;
-            int w = 0;
-
-            for (w = 0; w < bmWidth; w++)
-            {
-
-                // this way we get a height and width coordinate to give NegDiag()
-                // if height == 0 and width / 2 has remainder 1 (meaning unequal), then run NegDiag().
-
-                grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
-
-            }
-
-            //Console.WriteLine("Outside everything: W== " + w);
-            // At this point w is equal to bmWidth.
-            w--; // Dirty hack. TODO: Fix more elegantly.
-
-            if (squareSize > 2)
-            {
-
-
-                if (evenW == true)
-                {
-                    for (h = 2; h < bmHeight; h++)
-                    {
-                        if(h%2==0)
-                        {
-                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
-                        }
-                        else if(h==bmHeight-1)
-                        {
-                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
-                        }
-                        else
-                        {
-
-                        }
-                        
-                    }
-                }
-                else
-                {
-                    for (h = 3; h < bmHeight; h++)
-                    {
-                        if (h % 2 == 1)
-                        {
-                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
-                        }
-                        else if (h == bmHeight - 1)
-                        {
-                            grayData.AddRange(NegDiag(w, h, bmInput, evenW, evenH));
-                        }
-                        else
-                        {
-
-                        }
-                        
-                    }
-                }
-            }
-
-            // Width of an 8x8 pixel image is 8, but GetPixel() goes from 0 to 7, so in order to set the max width GetPixel() can handle, I set w here. 
-            // I am not sure if it would be the correct place stylistically, I can argue it would be better in the grayData() function or here.
-            // I choose it in the function as it makes more sense to do the calculation there, it's closer to where it needs to be in the end.
-
-
-
-            //w = bmWidth;
-            // For the second half of the grid, we set w to max width and go down the height (with (0,0) in the top left corner),
-            // that way we get the other half of the grid: Negative diagnoal from (width,0) is 
-            //If the width is equal the last 
-
-
-            //for (h=0;h<= bmHeight; h++)
-            //{
-            //    grayData.AddRange(NegDiag((w-1), h, bmInput));
-            //}
-
-            //foreach (int i in grayData)
-            //{
-            //    System.Console.WriteLine(i);
-            //}
-
-
-
-
-            return grayData;
-        }
 
 
         static void Main(string[] args)
         {
             Program p = new Program();
-            Bitmap bm = new Bitmap(args[0]);
 
-            // resize to 8x8 or 10x10
-            Bitmap Resized = p.Resize(bm, p.squareSize);
-            // Grayscale resized bitmap
+            
+            int numberOfMaxDegreeOfParallelismInt = 6;
+            string SearchPattern = "*.jpg";
 
+            // for all the jpg files, do rename in increasing number, with padding
+            // step 1: Find all jpg's in the current folder
 
-            // we now have a sized and grayscale bitmap. The plan is then to get the gray values in the zigzag pattern like JPG is compressed,
-            // meaning that the pixels that we should get are (0,0) (top left), (0,1), (1,0), (2,0), (1,1), (0,2), (0,3) etc. https://en.wikipedia.org/wiki/File:JPEG_ZigZag.svg
+            
+            var paths = Directory.GetFiles(Directory.GetCurrentDirectory(), SearchPattern);
+            int count = paths.Length;
 
-            // The pixel data is returned as an int array: 
-            List<int> data = new List<int>();
+            p.SetMaxCount(count);
+            var watch = Stopwatch.StartNew();
 
-            data.AddRange(p.ZigzagFromBitmap(Resized));
-            Console.WriteLine("Contents of dataint= ");
-            foreach (int dataint in data)
+            Parallel.ForEach(paths, new ParallelOptions { MaxDegreeOfParallelism = numberOfMaxDegreeOfParallelismInt }, (fileName) =>
             {
+                var timeForOneExec = Stopwatch.StartNew();
+                p.Run(fileName);
+                
+                timeForOneExec.Stop();
 
-                Console.Write(dataint + " ");
-            }
+                Interlocked.Increment(ref p.currentCount);
+                double timeSpanTicks = watch.ElapsedTicks;
+                Double avgTimeInMS = 0;
+
+                double avgTimeInS = ((timeSpanTicks / Stopwatch.Frequency) / p.currentCount);
+                int intSec = (int)Math.Floor(avgTimeInS);
+
+                // If average time in seconds is more than 1, remove the 1000 ms from the ms calculations. If this block is not there, times would be written as
+                // 01:1xxx, where 01 is seconds and 1xxx is the number of ms. Removing 1000 ms gives the expected output of 01:xxx. 
+                if (avgTimeInS >= 1)
+                {
+                    avgTimeInMS = (((timeSpanTicks / Stopwatch.Frequency) * 1000) / p.currentCount) - (1000 * intSec);
+                }
+                else
+                {
+                    avgTimeInMS = (((timeSpanTicks / Stopwatch.Frequency) * 1000) / p.currentCount);
+                }
 
 
+                TimeSpan timeS1Exec = timeForOneExec.Elapsed;
+
+                string timeStr = String.Format("{0:00}:{1:000}", timeS1Exec.Seconds, timeS1Exec.Milliseconds);
+                string avgTime = String.Format("{0:00}:{1:000}", avgTimeInS, avgTimeInMS);
+
+                // Caclulations for the time remaning
+
+                int totalSeconds = (int)Math.Floor((avgTimeInS * p.ImagesLeft()));
+
+                String timeRemainStr = p.TimeRemaining(totalSeconds); // Done via own function
+                TimeSpan timeSpan = TimeSpan.FromSeconds(((timeSpanTicks / Stopwatch.Frequency) / p.currentCount) * p.ImagesLeft());
+
+
+                Console.WriteLine(p.PercentDone() + " done" + " | Images to go = " + p.ImagesLeft() + " | Images done this session = " + p.ImgsDone() +
+                        " | Avg time taken = " + avgTime + " | Time remaning " + timeRemainStr);
+
+            });
+
+
+
+            
+            
         }
     }
 }
 
-
-/* Extra if()'s:
- * //if(h==bmHeight && w==bmWidth)
-            //{
-            //    h = -1;
-            //    w = -1;
-            //}
-            //if(h>7)
-            //{
-            //    h--;
-            //}
-            
-            //if (w==0 && h%2==1 && h<7)
-            //{
-                
-            //    h++;
-                
-            //}
-            //if(h==7 && w!=7 && w%2==0)
-            //{
-                
-            //    w++;
-            //}
-
-
-
-
-
-
-    // First line, do the NegDiag() things on every equal point (starting at 1 so execute at 2,4,6,8).
-
-            //    grayData.AddRange(NegDiag(w-1, h-1, bmInput, false));
-
-
-
-            //if (w == sqSize && h%2==0)
-            //{
-            //    // Last colum, hit (h==2, h==4, h==6).
-            //    grayData.AddRange(NegDiag(w - 1, h - 1, bmInput));
-            //}
-            //if (w== sqSize && h == sqSize) // is covered by above
-            //{
-            //    // Last point in the grid
-            //    //grayData.AddRange(NegDiag(w - 1, h - 1, bmInput, true));
-            //}
-
-            //int w = 0;
-
-
-
-
-
-
-
-
-
-            */
-
-
-
-
-//for (int i = 0; i < width+2; i++)
-//{
-
-//    if ((w >= 0 && h >= 0 && w < bmWidth && h < bmHeight)) // bmWidth and bmHeight starts at 1, so GetPixel() needs to be < bm*
-//    {
-//        Console.WriteLine("Inside 2nd grid, before move: w = " + w + " | h = " + h);
-//        Color c = bm.GetPixel(w, h);
-
-//        int grayScaleInt = (int)Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
-
-//        result.Add(grayScaleInt);
-
-
-
-//            //Console.WriteLine("single != true && w>=0 HIT");
-//            w++;
-//            h--;
-//            if(h==bmHeight)
-//            {
-//                break;
-//            }
-
-
-//    }
-//    else // Meaning we are outside of the grid
-//    {
-
-//    }
-
-//}
-//Console.WriteLine();
